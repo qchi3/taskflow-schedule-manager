@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h1 class="mb-0">🚀 <%= title %></h1>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <div class="badge bg-success fs-6 mb-3">
+                                ✅ サーバー稼働中
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-success mb-4"><%= message %></h3>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">📊 機能予定</h5>
+                                        <ul class="list-unstyled text-start">
+                                            <li>✅ プロジェクト管理</li>
+                                            <li>✅ タスク管理</li>
+                                            <li>✅ ガントチャート</li>
+                                            <li>✅ チーム共有</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">🛠️ 技術スタック</h5>
+                                        <ul class="list-unstyled text-start">
+                                            <li>• Node.js + Express</li>
+                                            <li>• PostgreSQL</li>
+                                            <li>• Socket.io</li>
+                                            <li>• Bootstrap 5</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <p class="text-muted">
+                                <small>初心者向けチュートリアルで作成中...</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
