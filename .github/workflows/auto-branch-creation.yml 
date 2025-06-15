@@ -1,0 +1,90 @@
+name: 自動ブランチ作成 - TaskFlow
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create-branch:
+    # 'ready-for-dev' ラベルが付いた時だけ実行
+    if: contains(github.event.issue.labels.*.name, 'ready-for-dev')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 開発用ブランチを作成
+        run: |
+          # Issue番号とタイトルを取得
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          
+          # ブランチ名を作成（英数字とハイフンのみ）
+          BRANCH_SUFFIX=$(echo "$ISSUE_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g' | cut -c1-30)
+          BRANCH_NAME="feature/issue-${ISSUE_NUMBER}-${BRANCH_SUFFIX}"
+          
+          echo "ブランチを作成中: $BRANCH_NAME"
+          
+          # mainブランチから新しいブランチを作成
+          git checkout main
+          git pull origin main
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
+          
+          # 後で使うために環境変数に保存
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Issueにコメントを追加
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branchName = process.env.BRANCH_NAME;
+            const comment = `🌟 **開発用ブランチを自動作成しました！**
+            
+            ブランチ名: \`${branchName}\`
+            
+            **Claude Code で作業する手順:**
+            \`\`\`bash
+            # 1. 最新のコードを取得
+            git fetch origin
+            
+            # 2. 作成されたブランチに切り替え
+            git checkout ${branchName}
+            
+            # 3. ブランチを最新にする
+            git pull origin ${branchName}
+            
+            # 4. 必要なパッケージをインストール
+            npm install
+            
+            # 5. 開発サーバーを起動
+            npm run dev
+            \`\`\`
+            
+            **開発の流れ:**
+            1. \`.claude-instructions.md\` を読んで開発ルールを確認
+            2. このissueの内容だけを実装
+            3. ブラウザで http://localhost:3000 で動作確認
+            4. 完成したらコードをプッシュ（プルリクエストは自動作成されます）
+            
+            **TaskFlow 技術情報:**
+            - サーバー: Node.js + Express
+            - テンプレート: EJS
+            - スタイル: Bootstrap 5
+            - 開発中機能: ユーザー認証、プロジェクト管理、リアルタイム更新
+            
+            **重要:** 他のブランチの変更は取り込まないでください！
+            困った時は \`.claude-instructions.md\` のチェックリストを確認してください。`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
